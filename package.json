@@ -1,0 +1,14 @@
+{
+  "name": "oauth-saver",
+  "version": "0.0.0",
+  "description": "A simple library to save and refresh oauth tokens",
+  "main": "lib/index.js",
+  "repository": "https://github.com/MatievisTheKat/oauth-saver",
+  "author": "Matthew Stead <matthew@matievisthekat.dev>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "axios": "^0.21.1",
+    "universal-cookie": "^4.0.4"
+  }
+}
