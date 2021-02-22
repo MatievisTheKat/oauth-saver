@@ -1,27 +1,50 @@
 import { AxiosRequestOptions } from "axios";
+import { EventEmitter } from "events";
 
 declare module "oauth-saver" {
-  export class RequestHandler {
+  export interface RequestHandlerEvents {
+    refresh: PartialTokenInfo;
+  }
+
+  export interface StorageKeys {
+    access_token?: string;
+    refresh_token?: string;
+    expires_in_ms?: number;
+    fetched_timestamp?: number;
+    type?: string;
+    scope?: string;
+  }
+
+  export class RequestHandler extends EventEmitter {
     private storage: Storage;
+    private clientSecret: string;
+
+    public refreshUrl: string;
+    public scope: string;
+    public clientId: string;
+    public redirectUri: string;
 
     constructor(options: RequestHandlerOptions);
 
-    request<T = any>(options: AxiosRequestOptions): AxiosPromise<T>;
-    setTokenInfo(tokenInfo: CompleteTokenInfo): void;
-    getTokenInfo(): PartialTokenInfo;
+    public on<E extends keyof RequestHandlerEvents>(e: E, cb: (data: RequestHandlerEvents[E]) => void): this;
+
+    public request<RequestResponse extends any, TokenResponse extends any>(options: AxiosRequestOptions): AxiosPromise<RequestResponse | TokenResponse>;
+    public setTokenInfo(tokenInfo: CompleteTokenInfo): void;
+    public getTokenInfo(): PartialTokenInfo;
+
+    public get isExpired(): boolean;
   }
 
   export class Storage {
-    set(key: string, value: any): Storage;
-    get<T = any>(key: string): T | void;
-    delete(key: string): Storage;
+    public set(key: keyof StorageKeys, value: any): Storage;
+    public get<K extends keyof StorageKeys>(key: K): StorageKeys[K];
+    public delete(key: string): Storage;
   }
 
   export interface RequestHandlerOptions {
     storage?: Storage;
     refreshUrl: string;
     scope: string;
-    
   }
 
   export interface CompleteTokenInfo {
